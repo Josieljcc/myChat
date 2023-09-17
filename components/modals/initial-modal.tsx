@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import * as z from "zod";
+import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import {
@@ -23,6 +24,8 @@ import {
 } from "../ui/form";
 import { Button } from "../ui/button";
 import { useEffect, useState } from "react";
+import FileUpload from "../file-upload";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   name: z.string().min(1, {
@@ -35,6 +38,8 @@ const formSchema = z.object({
 
 export const InitialModal = () => {
   const [isMounted, setIsMonted] = useState<boolean>(false);
+  const router = useRouter();
+
   useEffect(() => {
     setIsMonted(true);
   }, []);
@@ -50,7 +55,14 @@ export const InitialModal = () => {
   const isLoading = form.formState.isSubmitting;
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log(values);
+    try {
+      await axios.post("api/servers", values);
+      form.reset();
+      router.refresh();
+      window.location.reload();
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   if (!isMounted) {
@@ -76,7 +88,21 @@ export const InitialModal = () => {
           >
             <div className="space-y-8 px-6">
               <div className="flex items-center justify-center text-center">
-                TODO: upload da imagem
+                <FormField
+                  control={form.control}
+                  name="imageUrl"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <FileUpload
+                          endpoint="serverImage"
+                          value={field.value}
+                          onChange={field.onChange}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
               </div>
             </div>
             <FormField
@@ -88,7 +114,7 @@ export const InitialModal = () => {
                   <FormControl>
                     <Input
                       disabled={isLoading}
-                      className="bg-zinc-300/50 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black"
+                      className="bg-zinc-300/60 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black"
                       placeholder="Digite o nome do servidor"
                       {...field}
                     />
