@@ -42,7 +42,8 @@ async function NavigationSidebar() {
           afterSignOutUrl="/"
           appearance={{
             elements: {
-              avatarBox: "h-[48px] w-[48px]",
+              avatarBox:
+                "h-[48px] w-[48px] rounded-[24px] hover:rounded-[16px] transition-all",
             },
           }}
         />
