@@ -23,9 +23,10 @@ import {
   FormMessage,
 } from "../ui/form";
 import { Button } from "../ui/button";
-import { useEffect, useState } from "react";
 import FileUpload from "../file-upload";
 import { useRouter } from "next/navigation";
+import { useModal } from "@/hooks/use-modal-store";
+import { use, useEffect } from "react";
 
 const formSchema = z.object({
   name: z.string().min(1, {
@@ -36,13 +37,12 @@ const formSchema = z.object({
   }),
 });
 
-export const InitialModal = () => {
-  const [isMounted, setIsMonted] = useState<boolean>(false);
+export const EditServerModal = () => {
+  const { isOpen, onClose, type, data } = useModal();
   const router = useRouter();
 
-  useEffect(() => {
-    setIsMonted(true);
-  }, []);
+  const { server } = data;
+  const isModalOpen = isOpen && type === "editServer";
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -52,27 +52,38 @@ export const InitialModal = () => {
     },
   });
 
-  const { isValid, isSubmitting } = form.formState;
+  useEffect(() => {
+    if (server) {
+      form.setValue("name", server.name);
+      form.setValue("imageUrl", server.imageUrl);
+    }
+  }, [server, form]);
+
+  const isLoading = form.formState.isSubmitting;
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await axios.post("api/servers", values);
+      await axios.patch(
+        `http://localhost:3000/api/servers/${server?.id}`,
+        values
+      );
       form.reset();
       router.refresh();
-      window.location.reload();
+      onClose();
     } catch (error) {
       form.reset();
       router.refresh();
-      window.location.reload();
+      onClose();
     }
   };
 
-  if (!isMounted) {
-    return null;
-  }
+  const handleClose = () => {
+    onClose();
+    form.reset();
+  };
 
   return (
-    <Dialog open>
+    <Dialog open={isModalOpen} onOpenChange={handleClose}>
       <DialogContent className="bg-white text-black p-0 overflow-hidden">
         <DialogHeader className="pt-8 px-6">
           <DialogTitle className="text-2xl text-center font-bold">
@@ -115,7 +126,7 @@ export const InitialModal = () => {
                   <FormLabel>Nome do servidor</FormLabel>
                   <FormControl>
                     <Input
-                      disabled={isSubmitting}
+                      disabled={isLoading}
                       className="bg-zinc-300/60 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black"
                       placeholder="Digite o nome do servidor"
                       {...field}
@@ -126,8 +137,8 @@ export const InitialModal = () => {
               )}
             />
             <DialogFooter className="bg-gray-100 px-6 py-4">
-              <Button variant={"primary"} disabled={isSubmitting || !isValid}>
-                Criar
+              <Button variant={"primary"} disabled={isLoading}>
+                Salvar
               </Button>
             </DialogFooter>
           </form>
