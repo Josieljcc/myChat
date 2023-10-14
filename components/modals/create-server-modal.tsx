@@ -54,7 +54,7 @@ export const CreateServerModel = () => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await axios.post("http://localhost:3000/api/servers", values);
+      await axios.post("/api/servers", values);
       form.reset();
       router.refresh();
       onClose();
