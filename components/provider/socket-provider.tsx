@@ -3,14 +3,14 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { io as ClientIO } from "socket.io-client";
 
-type socketContextType = {
+type SocketContextType = {
   socket: any | null;
-  isConnect: boolean;
+  isConnected: boolean;
 };
 
-const SocketContext = createContext<socketContextType>({
+const SocketContext = createContext<SocketContextType>({
   socket: null,
-  isConnect: false,
+  isConnected: false,
 });
 
 export const useSocket = () => {
@@ -19,23 +19,23 @@ export const useSocket = () => {
 
 export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   const [socket, setSocket] = useState(null);
-  const [isConnect, setIsConnect] = useState(false);
+  const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
     const socketInstance = new (ClientIO as any)(
-      process.env.NEXT_PUBLIC_SOCKET_URL!,
+      process.env.NEXT_PUBLIC_SITE_URL!,
       {
-        path: "api/socket/io",
+        path: "/api/socket/io",
         addTrailingSlash: false,
       }
     );
 
     socketInstance.on("connect", () => {
-      setIsConnect(true);
+      setIsConnected(true);
     });
 
     socketInstance.on("disconnect", () => {
-      setIsConnect(false);
+      setIsConnected(false);
     });
 
     setSocket(socketInstance);
@@ -46,7 +46,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   return (
-    <SocketContext.Provider value={{ socket, isConnect }}>
+    <SocketContext.Provider value={{ socket, isConnected }}>
       {children}
     </SocketContext.Provider>
   );
