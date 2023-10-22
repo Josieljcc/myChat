@@ -54,10 +54,10 @@ export const ServerSearch = ({ data }: ServersideBarProps) => {
   }) => {
     setOpen(false);
     if (type === "member") {
-      return router.push(`/servers/${parms.serverId}/conversations/${id}`);
+      return router.push(`/servers/${parms?.serverId}/conversations/${id}`);
     }
     if (type === "channel") {
-      return router.push(`/servers/${parms.serverId}/channels/${id}`);
+      return router.push(`/servers/${parms?.serverId}/channels/${id}`);
     }
   };
 
