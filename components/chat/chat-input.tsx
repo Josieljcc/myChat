@@ -32,7 +32,9 @@ export const ChatInput = ({ apiUrl, query, name, type }: ChatInputProps) => {
     },
     resolver: zodResolver(formSchema),
   });
-  const isloading = form.formState.isSubmitting;
+  const {
+    formState: { isSubmitting },
+  } = form;
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     try {
@@ -65,7 +67,7 @@ export const ChatInput = ({ apiUrl, query, name, type }: ChatInputProps) => {
                     <Plus className="text-white dark:text-[#313338]" />
                   </button>
                   <Input
-                    disabled={isloading}
+                    disabled={isSubmitting}
                     className="px-14 py-6 bg-zinc-200/90 dark:bg-zinc-600/75 border-none border-0 focus-visible:ring-0 rounded-full w-full focus-visible:ring-offset-0 text-zinc-600 dark:text-zinc-300"
                     placeholder={`Mensagem ${
                       type === "conversation" ? name : "#" + name
