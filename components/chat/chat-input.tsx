@@ -67,7 +67,7 @@ export const ChatInput = ({ apiUrl, query, name, type }: ChatInputProps) => {
                   <Input
                     disabled={isloading}
                     className="px-14 py-6 bg-zinc-200/90 dark:bg-zinc-600/75 border-none border-0 focus-visible:ring-0 rounded-full w-full focus-visible:ring-offset-0 text-zinc-600 dark:text-zinc-300"
-                    placeholder={`Message ${
+                    placeholder={`Mensagem ${
                       type === "conversation" ? name : "#" + name
                     } `}
                     {...field}
